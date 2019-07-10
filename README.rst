@@ -67,12 +67,30 @@ Example command::
         command_line  /usr/local/bin/gurobi_machines_plugin --url '$ARG1$' --client_id '$ARG2$' --client_secret '$ARG3$' --outdated_minute $ARG4$  $ARG5$
     }
 
+With proxy defined
+
+# use gurobi_machines with proxy
+define command{
+    command_name  check_gurobi_machines_proxy
+    command_line  https_proxy={{ nagios_plugins_https_proxy_env }} /usr/local/bin/gurobi_machines_plugin --url '$ARG1$' --client_id '$ARG2$' --client_secret '$ARG3$' --outdated_minute $ARG4$  $ARG5$
+}
+
 Example service::
 
     define service {
             host_name                       SERVERX
             service_description             service_name
             check_command                   check_gurobi_machines!https://cloud.gurobi.com/api/v2/pools/{PoolID}/machines!{client_id}!{client_secret}!60
+            use				                generic-service
+            notes                           some useful notes
+    }
+    
+With proxy defined:
+
+    define service {
+            host_name                       SERVERX
+            service_description             service_name
+            check_command                   check_gurobi_machines_proxy!https://cloud.gurobi.com/api/v2/pools/{PoolID}/machines!{client_id}!{client_secret}!60
             use				                generic-service
             notes                           some useful notes
     }
